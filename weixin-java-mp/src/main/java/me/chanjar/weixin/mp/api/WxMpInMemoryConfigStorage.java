@@ -3,6 +3,7 @@ package me.chanjar.weixin.mp.api;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.util.ToStringUtils;
 import me.chanjar.weixin.common.util.http.ApacheHttpClientBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
@@ -37,6 +38,8 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
 
   protected volatile String cardApiTicket;
   protected volatile long cardApiTicketExpiresTime;
+
+  protected volatile String locale;
 
   protected Lock accessTokenLock = new ReentrantLock();
   protected Lock jsapiTicketLock = new ReentrantLock();
@@ -294,6 +297,15 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
   @Override
   public boolean autoRefreshToken() {
     return true;
+  }
+
+  @Override
+  public String getLocale() {
+    if(StringUtils.isBlank(locale)){
+      //如果语言为null,默认为中文
+      this.locale = "zh_CN";
+    }
+    return this.locale;
   }
 
   public void setApacheHttpClientBuilder(ApacheHttpClientBuilder apacheHttpClientBuilder) {

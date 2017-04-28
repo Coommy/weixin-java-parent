@@ -5,6 +5,7 @@ import me.chanjar.weixin.common.util.http.ApacheHttpClientBuilder;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
+import java.util.Locale;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -112,4 +113,10 @@ public interface WxMpConfigStorage {
    * 是否自动刷新token
    */
   boolean autoRefreshToken();
+
+  /**
+   * 获取中英文
+   * @return
+   */
+  String getLocale();
 }

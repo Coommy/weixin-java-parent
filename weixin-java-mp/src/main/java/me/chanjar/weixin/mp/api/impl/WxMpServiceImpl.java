@@ -16,6 +16,7 @@ import me.chanjar.weixin.common.util.http.*;
 import me.chanjar.weixin.mp.api.*;
 import me.chanjar.weixin.mp.bean.*;
 import me.chanjar.weixin.mp.bean.result.*;
+import me.chanjar.weixin.mp.util.DomainUtil;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -101,8 +102,9 @@ public class WxMpServiceImpl implements WxMpService {
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" +
             "&appid=" + this.configStorage.getAppId() + "&secret="
             + this.configStorage.getSecret();
+        //modified by xuht
         try {
-          HttpGet httpGet = new HttpGet(url);
+          HttpGet httpGet = new HttpGet(DomainUtil.changeAPIUrl(url, this.configStorage.getLocale()));
           if (this.httpProxy != null) {
             RequestConfig config = RequestConfig.custom().setProxy(this.httpProxy).build();
             httpGet.setConfig(config);
@@ -263,7 +265,8 @@ public class WxMpServiceImpl implements WxMpService {
   private WxMpOAuth2AccessToken getOAuth2AccessToken(StringBuilder url) throws WxErrorException {
     try {
       RequestExecutor<String, String> executor = new SimpleGetRequestExecutor();
-      String responseText = executor.execute(this.getHttpclient(), this.httpProxy, url.toString(), null);
+      //modify by xuht
+      String responseText = executor.execute(this.getHttpclient(), this.httpProxy, DomainUtil.changeAPIUrl(url.toString(), this.configStorage.getLocale()), null);
       return WxMpOAuth2AccessToken.fromJson(responseText);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -347,12 +350,14 @@ public class WxMpServiceImpl implements WxMpService {
 
   @Override
   public String get(String url, String queryParam) throws WxErrorException {
-    return execute(new SimpleGetRequestExecutor(), url, queryParam);
+    //modified by xuht 增加国际版微信公众平台判断
+    return execute(new SimpleGetRequestExecutor(), DomainUtil.changeAPIUrl(url, this.configStorage.getLocale()), queryParam);
   }
 
   @Override
   public String post(String url, String postData) throws WxErrorException {
-    return execute(new SimplePostRequestExecutor(), url, postData);
+    //modified by xuht 增加国际版微信公众平台判断，
+    return execute(new SimplePostRequestExecutor(), DomainUtil.changeAPIUrl(url, this.configStorage.getLocale()), postData);
   }
 
   /**
